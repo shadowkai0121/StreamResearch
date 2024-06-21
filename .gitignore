@@ -1,0 +1,12 @@
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+app/*
+!app/.gitkeep
+docker/logs/*
+deploy.zip
+.env
+.ebignore
+*.csv
+*.json
+.venv/
