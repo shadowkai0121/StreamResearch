@@ -1,5 +1,7 @@
 import json
 import pandas as pd
+import re
+
 
 def flatten_json(y):
     out = {}
@@ -9,20 +11,64 @@ def flatten_json(y):
             for a in x:
                 flatten(x[a], name + a + '_')
         elif type(x) is list:
-            out[name[:-1]] = json.dumps(x)  # Convert lists and dicts to JSON string
+            # Convert lists and dicts to JSON string
+            out[name[:-1]] = json.dumps(x)
         else:
             out[name[:-1]] = x
 
     flatten(y)
     return out
 
+def title_convert_to_array(title_string):
+    match = re.match(r'(.*) \((\d+) (year|years|month|months)\)', title_string)
+    
+    if match:
+        name = match.group(1)
+        number = int(match.group(2))
+        period = match.group(3)
+
+        if period in ('year', 'years'):
+            days = number * 365
+        elif period in ('month', 'months'):
+            days = number * 30
+
+        return (name, days)
+    else:
+        return ('', 0)
+
+
 with open('chat.json', 'r') as f:
     json_data = json.load(f)
 
-flattened_data = [flatten_json(item) for item in json_data]
+formatted_data = {
+    'action_type': [],
+    'author_name': [],
+    'author_title': [],
+    'author_member_duration': [],
+    'message': [],
+    'message_type': [],
+    'time_in_seconds': [],
+    'timestamp': []
+}
+for data in json_data:
+    formatted_data['action_type'].append(data['action_type'])
+    formatted_data['author_name'].append(data['author']['name'])
+    try:
+        title, member_duration = title_convert_to_array(data['author']['badges'][0]['title'])
+    except Exception as e:
+        title = ''
+        member_duration = 0
+    formatted_data['author_title'].append(title)
+    formatted_data['author_member_duration'].append(member_duration)
+    formatted_data['message'].append(data['message'])
+    formatted_data['message_type'].append(data['message_type'])
+    formatted_data['time_in_seconds'].append(data['time_in_seconds'])
+    formatted_data['timestamp'].append(data['timestamp'])
+# flattened_data = [flatten_json(item) for item in json_data]
 
-df = pd.DataFrame(flattened_data)
+df = pd.DataFrame(formatted_data)
+df = df.loc[df['time_in_seconds'] >= 0] # remove message before live
 
 df.to_csv('chart.csv', index=False)
 
-df.head()
+print(df.head(), flush=True)
