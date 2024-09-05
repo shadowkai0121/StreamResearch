@@ -68,9 +68,10 @@ for data in json_data:
 
 df = pd.DataFrame(formatted_data)
 df = df.loc[df['time_in_seconds'] >= 0] # remove message before live
-df['time_in_minutes'] = (df['time_in_seconds'] // 60).astype(int)
 
 df.to_csv('chart.csv', index=False)
+
+df['time_in_minutes'] = (df['time_in_seconds'] // 60).astype(int)
 
 total_messages_per_minute = df.groupby('time_in_minutes').size().reset_index(name='message_count')
 
