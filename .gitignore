@@ -9,4 +9,5 @@ deploy.zip
 .ebignore
 *.csv
 *.json
+*.log
 .venv/
