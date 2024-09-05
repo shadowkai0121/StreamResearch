@@ -72,4 +72,20 @@ df['time_in_minutes'] = (df['time_in_seconds'] // 60).astype(int)
 
 df.to_csv('chart.csv', index=False)
 
+total_messages_per_minute = df.groupby('time_in_minutes').size().reset_index(name='message_count')
+
+member_messages_per_minute = df[df['author_title'] == 'Member'].groupby('time_in_minutes').size().reset_index(name='message_count')
+
+moving_average = total_messages_per_minute.copy(True)
+moving_average['message_count'] = total_messages_per_minute['message_count'].rolling(window=10).mean()
+moving_average['message_count'] = moving_average['message_count'].fillna(total_messages_per_minute['message_count'].mean())
+
+per_minute = pd.DataFrame({
+    'minute': total_messages_per_minute['time_in_minutes'],
+    'total': total_messages_per_minute['message_count'],
+    'member': member_messages_per_minute['message_count'],
+    'mv10': moving_average['message_count']
+})
+per_minute.to_csv('per_minute.csv')
+
 print(df.head(), flush=True)
