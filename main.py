@@ -68,6 +68,7 @@ for data in json_data:
 
 df = pd.DataFrame(formatted_data)
 df = df.loc[df['time_in_seconds'] >= 0] # remove message before live
+df['time_in_minutes'] = (df['time_in_seconds'] // 60).astype(int)
 
 df.to_csv('chart.csv', index=False)
 
