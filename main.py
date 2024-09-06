@@ -69,7 +69,7 @@ for data in json_data:
 df = pd.DataFrame(formatted_data)
 df = df.loc[df['time_in_seconds'] >= 0] # remove message before live
 
-df.to_csv('chart.csv', index=False)
+df.to_csv('chat.csv', index=False)
 print(df.head(), flush=True)
 print(df[['author_member_duration']].describe(), flush=True)
 

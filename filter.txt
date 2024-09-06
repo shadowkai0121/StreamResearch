@@ -31,7 +31,7 @@ KEKW
 (hello)+
 (hi)+
 (hai)+
-goo+o*d
+goo+o*d*
 (wa+a*)+
 (heh)+
 (yo)+
