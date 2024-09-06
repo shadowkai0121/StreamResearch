@@ -70,6 +70,8 @@ df = pd.DataFrame(formatted_data)
 df = df.loc[df['time_in_seconds'] >= 0] # remove message before live
 
 df.to_csv('chart.csv', index=False)
+print(df.head(), flush=True)
+print(df[['author_member_duration']].describe(), flush=True)
 
 df['time_in_minutes'] = (df['time_in_seconds'] // 60).astype(int)
 
@@ -81,12 +83,16 @@ moving_average = total_messages_per_minute.copy(True)
 moving_average['message_count'] = total_messages_per_minute['message_count'].rolling(window=10).mean()
 moving_average['message_count'] = moving_average['message_count'].fillna(total_messages_per_minute['message_count'].mean())
 
-per_minute = pd.DataFrame({
+mean_member_duration = df.groupby('time_in_minutes').mean('author_member_duration')[['author_member_duration']]
+
+df_per_minute = pd.DataFrame({
     'minute': total_messages_per_minute['time_in_minutes'],
     'total': total_messages_per_minute['message_count'],
     'member': member_messages_per_minute['message_count'],
+    'mean_member_duration': mean_member_duration['author_member_duration'],
     'mv10': moving_average['message_count']
 })
-per_minute.to_csv('chat_per_minute.csv')
+df_per_minute.to_csv('chat_per_minute.csv')
 
-print(df.head(), flush=True)
+print(df_per_minute.head(), flush=True)
+print(df_per_minute[['total', 'member', 'mean_member_duration']].describe(), flush=True)
