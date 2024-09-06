@@ -31,7 +31,7 @@ KEKW
 (hello)+
 (hi)+
 (hai)+
-goo+o*d*
+go+o*d*
 (wa+a*)+
 (heh)+
 (yo)+
@@ -131,3 +131,15 @@ kinda
 taller
 sip
 fine
+ho+o*
+gives*
+large
+waharo
+o+o*t
+weh
+woot
+thought
+long
+YAY
+woh
+gamba(re)*
