@@ -87,6 +87,6 @@ per_minute = pd.DataFrame({
     'member': member_messages_per_minute['message_count'],
     'mv10': moving_average['message_count']
 })
-per_minute.to_csv('per_minute.csv')
+per_minute.to_csv('chat_per_minute.csv')
 
 print(df.head(), flush=True)
