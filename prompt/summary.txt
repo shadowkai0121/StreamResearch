@@ -1,0 +1,14 @@
+You will be provided with youtube chat messages, and your task is to summarize the message as follows:
+
+-Overall summary of discussion
+-Situation (the chat's sentiment and the liver was doing what)
+
+Please generate a summary of the discussion using the following format. Always use three hash marks (###) to label the "Overall Summary of Discussion" and "Situation" sections. Follow the example format below:
+
+### Overall Summary of Discussion:
+[Write the summary of the discussion here]
+
+### Situation:
+[Describe the situation here]
+
+Ensure that this format is consistently used in all responses.

@@ -4,9 +4,14 @@ from chat_downloader.sites import YouTubeChatDownloader
 import os
 import shutil
 import regex as re
+
+
 @dataclass
 class Env_:
     video_live_url: str
+
+    debug: bool = os.getenv('DEBUG')
+    has_summary: bool = os.getenv('HAS_SUMMARY')
     cleaned_list_path: str = os.getenv('CLEANED_LIST_PATH')
 
     @cached_property
@@ -34,7 +39,7 @@ class Env_:
 
     @cached_property
     def data_path(self) -> str:
-        return os.path.join(os.getenv('DATA_PATH'), self.video_title)
+        return os.path.join(os.getenv('DATA_PATH'), Env_.remove_illegal_path_characters(self.video_title))
 
     @cached_property
     def video_liver(self) -> str:
@@ -70,6 +75,12 @@ class Env_:
         if os.path.exists(self.data_path):
             shutil.rmtree(self.data_path)
         os.mkdir(self.data_path)
+
+    @staticmethod
+    def remove_illegal_path_characters(path) -> str:
+        illegal_characters = r'[<>:"/\\|?*\x00-\x1F]'
+        cleaned_path = re.sub(illegal_characters, '', path)
+        return cleaned_path.strip()
 
 
 if __name__ == '__main__':
