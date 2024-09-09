@@ -11,3 +11,4 @@ deploy.zip
 *.json
 *.log
 .venv/
+__pycache__/
