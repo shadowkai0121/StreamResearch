@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from functools import cached_property
 from chat_downloader.sites import YouTubeChatDownloader
+from stream_analysis.utils import convert_none
 import os
 import shutil
 import regex as re
@@ -10,9 +11,11 @@ import regex as re
 class Env_:
     video_live_url: str
 
-    debug: bool = bool(os.getenv('DEBUG'))
-    has_summary: bool = bool(os.getenv('HAS_SUMMARY'))
-    cleaned_list_path: str = os.getenv('CLEANED_LIST_PATH')
+    debug: bool = bool(convert_none(os.getenv('DEBUG')))
+    has_summary: bool = bool(convert_none(os.getenv('HAS_SUMMARY')))
+    cleaned_list_path: str = convert_none(os.getenv('CLEANED_LIST_PATH'))
+    chat_request_timeout: int | None = convert_none(
+        os.getenv('CHAT_REQUEST_TIMEOUT'), int)
 
     @cached_property
     def video_id(self) -> str:
@@ -46,6 +49,22 @@ class Env_:
         return self.video_data.get('author', '')
 
     @cached_property
+    def video_start_time(self) -> int:
+        timestamp = int(self.video_data.get('start_time', 0))
+        if timestamp > 0:
+            timestamp = timestamp / 1000000 # YT data is microsecs
+
+        return timestamp
+
+    @cached_property
+    def video_end_time(self) -> int:
+        timestamp = int(self.video_data.get('end_time', 0))
+        if timestamp > 0:
+            timestamp = timestamp / 1000000 # YT data is microsecs
+
+        return timestamp
+
+    @cached_property
     def video_data_path(self) -> str:
         return os.path.join(self.data_path, 'info.json')
 
@@ -65,6 +84,12 @@ class Env_:
     def chat_wordcloud_path(self) -> str:
         return os.path.join(self.data_path, 'wordcloud.png')
 
+    @cached_property
+    def cleaned_words(self) -> tuple:
+        with open(self.cleaned_list_path, 'r', encoding='utf8') as f:
+            cleaned_words = [word.strip() for word in f.readlines()]
+        return cleaned_words
+
     def __post_init__(self) -> None:
         self.video_live_url = self.video_live_url.split(
             '?')[0] if '?' in self.video_live_url else self.video_live_url
@@ -79,10 +104,11 @@ class Env_:
     @staticmethod
     def remove_illegal_path_characters(path) -> str:
         illegal_characters = r'[<>:"/\\|?*\x00-\x1F]'
-        cleaned_path = re.sub(illegal_characters, '', path)
-        return cleaned_path.strip()
+        cleaned_path = re.sub(illegal_characters, '', path).strip()
+        return cleaned_path
 
 
 if __name__ == '__main__':
     env_ = Env_(video_live_url='Http://example.com?si=dafds')
-    print(env_.has_summary)
+    print(env_.chat_request_timeout)
+    print(type(env_.chat_request_timeout))
