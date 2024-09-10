@@ -1,7 +1,7 @@
 import os
 from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion
-from env_ import Env_
+from stream_analysis.env_ import Env_
 import tiktoken  # 用於計算 tokens
 
 class Summary:
