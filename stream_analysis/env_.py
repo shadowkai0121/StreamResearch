@@ -10,8 +10,8 @@ import regex as re
 class Env_:
     video_live_url: str
 
-    debug: bool = os.getenv('DEBUG')
-    has_summary: bool = os.getenv('HAS_SUMMARY')
+    debug: bool = bool(os.getenv('DEBUG'))
+    has_summary: bool = bool(os.getenv('HAS_SUMMARY'))
     cleaned_list_path: str = os.getenv('CLEANED_LIST_PATH')
 
     @cached_property
@@ -85,4 +85,4 @@ class Env_:
 
 if __name__ == '__main__':
     env_ = Env_(video_live_url='Http://example.com?si=dafds')
-    print(env_.cleaned_list_path)
+    print(env_.has_summary)
