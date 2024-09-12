@@ -906,7 +906,7 @@ class Chat:
             downloader = ChatDownloader()
             chat = downloader.get_chat(
                 self._env.video_live_url,
-                message_groups=['messages', 'superchat'],)
+                message_groups=['messages', 'superchat'])
 
             messages = []
             chunk_size = 1000
@@ -931,7 +931,9 @@ class Chat:
                     [self._df_raw, pd.concat(messages, ignore_index=True)])
                 messages = []
 
+            self._df_raw['time_in_minutes'] = (self._df_raw['time_in_seconds'] // 60).astype(int)
             self._df_raw = self._df_raw.sort_values('time_in_seconds')
+
         return self._df_raw
 
 
