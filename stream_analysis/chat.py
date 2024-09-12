@@ -1017,7 +1017,7 @@ class Chat:
         return self.df_per_min[self.df_per_min['messages'] > self.peak_threshold]
 
     @cached_property
-    def peak_ranges(self) -> tuple:
+    def activity_ranges(self) -> tuple:
         # .shift() 將 is_above_average 欄位的數值往後移動一個位置，這樣可以比較當前的值和前一個值。
         # .ne() 比較當前值和前一個值是否不同。如果不同，表示出現了趨勢的變化（從低於到高於，或從高於到低於）。
         # .cumsum() 累積計數，為每個趨勢變化賦予一個唯一的組別號碼將每個連續的 True 或 False 區間歸類在一起。

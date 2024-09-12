@@ -94,6 +94,26 @@ class Env_:
             cleaned_words = [word.strip() for word in f.readlines()]
         return cleaned_words
 
+    @cached_property
+    def time_labels(self) -> tuple:
+        interval = convert_none(os.getenv('PLOT_TIME_INTERVAL'), int) or 10
+        interval_by_sec = 60 * interval
+        duration = self.video_data.get('duration', 0)
+        time_labels = []
+        time_values = []
+
+        max_value = duration // interval_by_sec
+        
+        for i in range(int(max_value) + 1):
+            hours = i * interval // 60
+            minutes = (i * interval) % 60
+            time_label = f"{hours:02}:{minutes:02}"
+            time_labels.append(time_label)
+
+            time_values.append(i * interval)
+
+        return time_labels, time_values
+
     def __post_init__(self) -> None:
         self.video_live_url = self.video_live_url.split(
             '?')[0] if '?' in self.video_live_url else self.video_live_url
