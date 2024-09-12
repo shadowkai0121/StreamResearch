@@ -1045,6 +1045,10 @@ class Chat:
             merged_intervals.append((previous_start, previous_end))
         return merged_intervals
 
+    @cached_property
+    def hightlight_urls(self) -> list:
+        return [f'{self._env.video_watching_url}/watch?v={self._env.video_id}&t={start}m' for start, end in self.activity_ranges]
+
 
 if __name__ == '__main__':
     env_ = Env_(
