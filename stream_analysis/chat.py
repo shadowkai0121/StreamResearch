@@ -887,6 +887,7 @@ the paid event
 - gifted
 - superchat
 '''
+from functools import cached_property, reduce
 import pandas as pd
 from stream_analysis.env_ import Env_
 from stream_analysis.types.message import Message
@@ -896,6 +897,7 @@ from chat_downloader import ChatDownloader
 class Chat:
     _env: Env_
     _df_raw: pd.DataFrame = None
+    _range_interval: int = 3
 
     def __init__(self, _env: Env_) -> None:
         self._env = _env
@@ -931,15 +933,122 @@ class Chat:
                     [self._df_raw, pd.concat(messages, ignore_index=True)])
                 messages = []
 
-            self._df_raw['time_in_minutes'] = (self._df_raw['time_in_seconds'] // 60).astype(int)
+            self._df_raw['time_in_minutes'] = (
+                self._df_raw['time_in_seconds'] // 60).astype(int)
             self._df_raw = self._df_raw.sort_values('time_in_seconds')
 
         return self._df_raw
 
+    @cached_property
+    def df_raw(self) -> pd.DataFrame:
+        return self.get()
+
+    @cached_property
+    def df_membership_duration_avg_per_min(self) -> pd.DataFrame:
+        return self.df_raw.groupby('time_in_minutes').agg(
+            membership_duration_avg=('author_membership_duration', 'mean'),
+        ).reset_index()
+
+    @cached_property
+    def df_money_sum_per_min(self) -> pd.DataFrame:
+        return self.df_raw.groupby('time_in_minutes').agg(
+            money_sum=('money', 'sum')
+        ).reset_index()
+
+    @cached_property
+    def df_messages_per_min(self) -> pd.DataFrame:
+        return self.df_raw[self.df_raw['message'].str.len() > 0].groupby('time_in_minutes').agg(
+            messages=('message', 'count'),
+        ).reset_index()
+
+    @cached_property
+    def df_message_without_emotes_per_min(self) -> pd.DataFrame:
+        return self.df_raw[self.df_raw['message_without_emotes'].str.len() > 0].groupby('time_in_minutes').agg(
+            message_without_emotes=('message_without_emotes', 'count'),
+        ).reset_index()
+
+    @cached_property
+    def df_cleaned_message_per_min(self) -> pd.DataFrame:
+        return self.df_raw[self.df_raw['cleaned_message'].str.len() > 0].groupby('time_in_minutes').agg(
+            cleaned_messages=('cleaned_message', 'count'),
+        ).reset_index()
+
+    @cached_property
+    def df_member_message_per_min(self) -> pd.DataFrame:
+        return self.df_raw[self.df_raw['author_title'] == 'member'].groupby('time_in_minutes').agg(
+            member_messages=('message', 'count'),
+        ).reset_index()
+
+    @cached_property
+    def df_per_min(self) -> pd.DataFrame:
+        data_frames = (
+            self.df_membership_duration_avg_per_min,
+            self.df_money_sum_per_min,
+            self.df_messages_per_min,
+            self.df_message_without_emotes_per_min,
+            self.df_cleaned_message_per_min,
+            self.df_member_message_per_min,
+        )
+        df = reduce(
+            lambda left, right: pd.merge(
+                left, right, on=['time_in_minutes'], how='outer'),
+            data_frames)
+
+        df['messages_moving_avg'] = df['messages'].rolling(window=10).mean()
+        df['messages_moving_avg'] = df['messages_moving_avg'].fillna(
+            df['messages'].mean())
+        df['is_above_average'] = df['messages'] > df['messages_moving_avg']
+        return df
+
+    @cached_property
+    def messags_mean_per_min(self) -> float:
+        return self.df_per_min['messages'].mean()
+
+    @cached_property
+    def messags_std_per_min(self) -> float:
+        return self.df_per_min['messages'].std()
+
+    @cached_property
+    def peak_threshold(self) -> float:
+        return self.messags_mean_per_min + 1.96 * self.messags_std_per_min
+
+    @cached_property
+    def df_peaks(self) -> pd.DataFrame:
+        return self.df_per_min[self.df_per_min['messages'] > self.peak_threshold]
+
+    @cached_property
+    def peak_ranges(self) -> tuple:
+        # .shift() 將 is_above_average 欄位的數值往後移動一個位置，這樣可以比較當前的值和前一個值。
+        # .ne() 比較當前值和前一個值是否不同。如果不同，表示出現了趨勢的變化（從低於到高於，或從高於到低於）。
+        # .cumsum() 累積計數，為每個趨勢變化賦予一個唯一的組別號碼將每個連續的 True 或 False 區間歸類在一起。
+        peak_transitions = self.df_per_min['is_above_average'].ne(
+            self.df_per_min['is_above_average'].shift()).cumsum()
+
+        # 對每個分組，檢查該區間內的所有值是否都為 True，也就是確定這段時間都處於峰值。如果是，則返回該區間的起點和終點（x.index.min() 和 x.index.max()）
+        df = self.df_per_min.groupby(peak_transitions)\
+            .apply(lambda x: (x.index.min(), x.index.max()) if x['is_above_average'].all() else None).dropna()
+
+        merged_intervals = []
+        previous_start, previous_end = None, None
+
+        # 進行連續區間判斷，超過 self._range_interval 分鐘下降則為結束
+        for start, end in df:
+            if previous_start is None:
+                previous_start, previous_end = start, end
+            elif start - previous_end <= self._range_interval:
+                previous_end = end
+            else:
+                merged_intervals.append((previous_start, previous_end))
+                previous_start, previous_end = start, end
+
+        if previous_start is not None:
+            merged_intervals.append((previous_start, previous_end))
+        return merged_intervals
+
 
 if __name__ == '__main__':
     env_ = Env_(
-        video_live_url='https://www.youtube.com/live/evcruocvE3g?si=kAljJVjWx9aYaFsBclea')
+        video_live_url='https://www.youtube.com/live/2Z9CzFwxNJI?si=EpdFBU3VS-XCXx0g')
     chat = Chat(env_)
     df = chat.get()
     df.to_csv('chat.csv', encoding='utf8')

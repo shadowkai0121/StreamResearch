@@ -52,7 +52,7 @@ class Env_:
     def video_start_time(self) -> int:
         timestamp = int(self.video_data.get('start_time', 0))
         if timestamp > 0:
-            timestamp = timestamp / 1000000 # YT data is microsecs
+            timestamp = timestamp / 1000000  # YT data is microsecs
 
         return timestamp
 
@@ -60,7 +60,7 @@ class Env_:
     def video_end_time(self) -> int:
         timestamp = int(self.video_data.get('end_time', 0))
         if timestamp > 0:
-            timestamp = timestamp / 1000000 # YT data is microsecs
+            timestamp = timestamp / 1000000  # YT data is microsecs
 
         return timestamp
 
@@ -75,6 +75,10 @@ class Env_:
     @cached_property
     def chat_csv_path(self) -> str:
         return os.path.join(self.data_path, 'chat.csv')
+
+    @cached_property
+    def chat_per_min_csv_path(self) -> str:
+        return os.path.join(self.data_path, 'chat_per_min.csv')
 
     @cached_property
     def chat_timeline_path(self) -> str:

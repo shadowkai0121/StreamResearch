@@ -46,10 +46,14 @@ class Message(ColumnsToPropertyMixin, ConvertMixin):
             'time_in_seconds': secure_data['time_in_seconds'],
             'timestamp': secure_data['timestamp'],
         }
-        
+
         if secure_data['money']:
-            money = Money(secure_data['money'], env_)
-            self.data['money'] = money.std_amount
+            try:
+                money = Money(secure_data['money'], env_)
+                self.data['money'] = money.std_amount
+            except Exception:
+                print(data['money'], flush=True)
+                self.data['money'] = 0
 
         if len(self.message):
             if secure_data['emotes']:

@@ -6,6 +6,10 @@ from stream_analysis.env_ import Env_
 from stream_analysis.mixins import ColumnsToPropertyMixin, ConvertMixin
 from stream_analysis.utils import get_secure_dict
 
+currency_alias: dict = {
+    '₫': 'vnd',
+}
+
 
 class Conversion:
     _instance: 'Conversion' = None
@@ -23,7 +27,8 @@ class Conversion:
             self._env.video_start_time or time())
 
         if stream_time not in self._exchange:
-            url = f'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{stream_time}/v1/currencies/usd.json'
+            url = f'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{
+                stream_time}/v1/currencies/usd.json'
 
             response = requests.get(url)
 
@@ -36,7 +41,12 @@ class Conversion:
             env = _env
 
         stream_time = self.get_date_string(env.video_start_time)
-        exchange_rate = self._exchange[stream_time][currency.lower()]
+
+        currency = currency.lower()
+        if currency in currency_alias:
+            currency = currency_alias[currency]
+
+        exchange_rate = self._exchange[stream_time][currency]
         return amount / exchange_rate
 
     def get_date_string(self, timestamp: int) -> str:
