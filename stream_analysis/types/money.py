@@ -27,8 +27,7 @@ class Conversion:
             self._env.video_start_time or time())
 
         if stream_time not in self._exchange:
-            url = f'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{
-                stream_time}/v1/currencies/usd.json'
+            url = f'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{stream_time}/v1/currencies/usd.json'
 
             response = requests.get(url)
 
