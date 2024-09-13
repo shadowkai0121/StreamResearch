@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from functools import cached_property
+from math import ceil
 from chat_downloader.sites import YouTubeChatDownloader
-from stream_analysis.utils import convert_none
+from stream_analysis.utils import convert_none, minutes_to_hhmm
 import os
 import shutil
 import regex as re
@@ -102,15 +103,15 @@ class Env_:
         time_labels = []
         time_values = []
 
-        max_value = duration // interval_by_sec
-        
-        for i in range(int(max_value) + 1):
-            hours = i * interval // 60
-            minutes = (i * interval) % 60
-            time_label = f"{hours:02}:{minutes:02}"
-            time_labels.append(time_label)
+        interval_amount = duration // interval_by_sec + 1
 
+        for i in range(int(interval_amount) + 1):
+            time_labels.append(minutes_to_hhmm((i * interval) % 60))
             time_values.append(i * interval)
+
+        minutes = ceil(duration / 60)
+        time_labels.append(minutes_to_hhmm(minutes))
+        time_values.append(minutes)
 
         return time_labels, time_values
 

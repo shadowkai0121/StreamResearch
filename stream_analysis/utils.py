@@ -109,3 +109,8 @@ def clean_string(s: str, words: list = [], replacement: str = '') -> str:
         s = pattern.sub(replacement, s)
 
     return s.strip() if s else ''
+
+def minutes_to_hhmm(minutes):
+    hours = int(minutes // 60)
+    mins = int(minutes % 60)
+    return f'{hours:02d}:{mins:02d}'

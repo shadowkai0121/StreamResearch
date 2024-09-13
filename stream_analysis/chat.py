@@ -956,6 +956,13 @@ class Chat:
         ).reset_index()
 
     @cached_property
+    def df_active_users_per_min(self) -> pd.DataFrame:
+        df_active_users_per_min = self.df_raw.groupby('time_in_minutes')['author_id'].nunique()
+        df_active_users_per_min = df_active_users_per_min.reset_index()
+        df_active_users_per_min = df_active_users_per_min.rename(columns={'author_id':'active_users'})
+        return df_active_users_per_min
+
+    @cached_property
     def df_messages_per_min(self) -> pd.DataFrame:
         return self.df_raw[self.df_raw['message'].str.len() > 0].groupby('time_in_minutes').agg(
             messages=('message', 'count'),
@@ -982,6 +989,7 @@ class Chat:
     @cached_property
     def df_per_min(self) -> pd.DataFrame:
         data_frames = (
+            self.df_active_users_per_min,
             self.df_membership_duration_avg_per_min,
             self.df_money_sum_per_min,
             self.df_messages_per_min,
