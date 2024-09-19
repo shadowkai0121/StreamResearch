@@ -122,9 +122,12 @@ class Env_:
         self.init_env()
 
     def init_env(self) -> None:
-        if os.path.exists(self.data_path):
-            shutil.rmtree(self.data_path)
-        os.mkdir(self.data_path)
+        if not self.debug:
+            if os.path.exists(self.data_path):
+                shutil.rmtree(self.data_path)
+
+        if not os.path.exists(self.data_path):
+            os.mkdir(self.data_path)
 
     @staticmethod
     def remove_illegal_path_characters(path) -> str:

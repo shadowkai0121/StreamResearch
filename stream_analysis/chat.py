@@ -888,6 +888,7 @@ the paid event
 - superchat
 '''
 from functools import cached_property, reduce
+import os
 import pandas as pd
 from stream_analysis.env_ import Env_
 from stream_analysis.types.message import Message
@@ -904,6 +905,9 @@ class Chat:
 
     def get(self) -> pd.DataFrame:
         if self._df_raw is None:
+            if self._env.debug and os.path.exists(self._env.chat_csv_path):
+                self._df_raw = pd.read_csv(self._env.chat_csv_path)
+                return self._df_raw
 
             downloader = ChatDownloader()
             chat = downloader.get_chat(
@@ -936,6 +940,9 @@ class Chat:
             self._df_raw['time_in_minutes'] = (
                 self._df_raw['time_in_seconds'] // 60).astype(int)
             self._df_raw = self._df_raw.sort_values('time_in_seconds')
+
+            if self._env.debug:
+                self._df_raw.to_csv(self._env.chat_csv_path)
 
         return self._df_raw
 
