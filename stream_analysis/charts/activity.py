@@ -1,27 +1,11 @@
 
 from matplotlib import pyplot as plt
-from matplotlib.axes import Axes
 from matplotlib.figure import Figure
-from stream_analysis.chat import Chat
-from stream_analysis.env_ import Env_
+from stream_analysis.charts.abstracts import AbstractChart
 import seaborn as sns
 
 
-class ActivityPerMin:
-    _chat: Chat
-    _env: Env_
-    _fig: Figure
-    _axes: Axes
-    _x_max: int
-    _y_min: int = 10
-    _fig_amount: int = 4
-
-    def __init__(self, chat: Chat, _env: Env_, *args, **kwargs) -> None:
-        self._chat = chat
-        self._env = _env
-
-        self.generate(*args, **kwargs)
-
+class ActivityPerMin(AbstractChart):
     def generate(self, *args, **kwargs) -> Figure:
         self._fig, self._axes = plt.subplots(
             self._fig_amount, 1, figsize=kwargs.get('figsize') or (20, 15),
@@ -34,16 +18,6 @@ class ActivityPerMin:
             self._axes[idx].set_xlim(0, self._x_max)
             self._axes[idx].grid(True)
 
-        for attr_name in dir(self):
-            if attr_name.startswith('_generate_'):
-                generate_chart = getattr(self, attr_name)
-                if callable(generate_chart):
-                    generate_chart()
-
-        return self._fig
-
-    @property
-    def fig(self) -> Figure:
         return self._fig
 
     def _generate_messages(self) -> None:
