@@ -73,12 +73,20 @@ class ActivityPerMin:
             color=palette[0],
             step='mid')
 
+        time_labes = self._env.time_labels[1][1:-1]
         self._axes[0].vlines(
-            self._env.time_labels[1][1:],
+            time_labes,
             ymin=0,
             ymax=self._chat.df_per_min['messages'].max(),
             colors='red',
             linestyles='--')
+
+        self._axes[0].vlines(
+            time_labes[::5][1:],
+            ymin=0,
+            ymax=self._chat.df_per_min['messages'].max(),
+            colors='red',
+            linestyles='-')
 
         self._axes[0].set_ylim(bottom=0)
         self._axes[0].legend()
@@ -93,12 +101,20 @@ class ActivityPerMin:
             color='blue',
             where='mid')
 
+        time_labes = self._env.time_labels[1][1:-1]
         self._axes[1].vlines(
-            self._env.time_labels[1][1:],
+            time_labes,
             ymin=0,
             ymax=self._chat.df_active_users_per_min['active_users'].max(),
             colors='red',
             linestyles='--')
+
+        self._axes[1].vlines(
+            time_labes[::5][1:],
+            ymin=0,
+            ymax=self._chat.df_active_users_per_min['active_users'].max(),
+            colors='red',
+            linestyles='-')
 
         self._axes[1].set_ylim(
             self._chat.df_active_users_per_min['active_users'].min() - self._y_min if self._chat.df_active_users_per_min['active_users'].min() > self._y_min else 0)
@@ -114,12 +130,22 @@ class ActivityPerMin:
             color='blue',
             where='mid')
 
+        time_labes = self._env.time_labels[1][1:-1]
         self._axes[2].vlines(
-            self._env.time_labels[1][1:],
+            time_labes,
             ymin=0,
-            ymax=self._chat.df_membership_duration_avg_per_min['membership_duration_avg'].max(),
+            ymax=self._chat.df_membership_duration_avg_per_min['membership_duration_avg'].max(
+            ),
             colors='red',
             linestyles='--')
+
+        self._axes[2].vlines(
+            time_labes[::5][1:],
+            ymin=0,
+            ymax=self._chat.df_membership_duration_avg_per_min['membership_duration_avg'].max(
+            ),
+            colors='red',
+            linestyles='-')
 
         self._axes[2].set_ylim(
             self._chat.df_membership_duration_avg_per_min['membership_duration_avg'].min() - self._y_min if self._chat.df_membership_duration_avg_per_min['membership_duration_avg'].min() > self._y_min else 0)
@@ -134,13 +160,21 @@ class ActivityPerMin:
             label='Money Per Minute',
             color='blue',
             where='mid')
-        
+
+        time_labes = self._env.time_labels[1][1:-1]
         self._axes[3].vlines(
-            self._env.time_labels[1][1:],
+            time_labes,
             ymin=0,
             ymax=self._chat.df_money_sum_per_min['money_sum'].max(),
             colors='red',
             linestyles='--')
+
+        self._axes[3].vlines(
+            time_labes[::5][1:],
+            ymin=0,
+            ymax=self._chat.df_money_sum_per_min['money_sum'].max(),
+            colors='red',
+            linestyles='-')
 
         self._axes[3].set_ylabel('Money (USD)')
         self._axes[3].set_title('Money Per Minute')
