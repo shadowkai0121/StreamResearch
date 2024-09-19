@@ -73,16 +73,8 @@ class ActivityPerMin:
             color=palette[0],
             step='mid')
 
-        time_labes = self._env.time_labels[1][1:-1]
         self._axes[0].vlines(
-            time_labes,
-            ymin=0,
-            ymax=self._chat.df_per_min['messages'].max(),
-            colors='red',
-            linestyles='--')
-
-        self._axes[0].vlines(
-            time_labes[::5][1:],
+            self._env.hourse_labels[1],
             ymin=0,
             ymax=self._chat.df_per_min['messages'].max(),
             colors='red',
@@ -101,16 +93,8 @@ class ActivityPerMin:
             color='blue',
             where='mid')
 
-        time_labes = self._env.time_labels[1][1:-1]
         self._axes[1].vlines(
-            time_labes,
-            ymin=0,
-            ymax=self._chat.df_active_users_per_min['active_users'].max(),
-            colors='red',
-            linestyles='--')
-
-        self._axes[1].vlines(
-            time_labes[::5][1:],
+            self._env.hourse_labels[1],
             ymin=0,
             ymax=self._chat.df_active_users_per_min['active_users'].max(),
             colors='red',
@@ -130,17 +114,8 @@ class ActivityPerMin:
             color='blue',
             where='mid')
 
-        time_labes = self._env.time_labels[1][1:-1]
         self._axes[2].vlines(
-            time_labes,
-            ymin=0,
-            ymax=self._chat.df_membership_duration_avg_per_min['membership_duration_avg'].max(
-            ),
-            colors='red',
-            linestyles='--')
-
-        self._axes[2].vlines(
-            time_labes[::5][1:],
+            self._env.hourse_labels[1],
             ymin=0,
             ymax=self._chat.df_membership_duration_avg_per_min['membership_duration_avg'].max(
             ),
@@ -161,16 +136,8 @@ class ActivityPerMin:
             color='blue',
             where='mid')
 
-        time_labes = self._env.time_labels[1][1:-1]
         self._axes[3].vlines(
-            time_labes,
-            ymin=0,
-            ymax=self._chat.df_money_sum_per_min['money_sum'].max(),
-            colors='red',
-            linestyles='--')
-
-        self._axes[3].vlines(
-            time_labes[::5][1:],
+            self._env.hourse_labels[1],
             ymin=0,
             ymax=self._chat.df_money_sum_per_min['money_sum'].max(),
             colors='red',

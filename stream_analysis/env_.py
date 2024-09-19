@@ -96,6 +96,26 @@ class Env_:
         return cleaned_words
 
     @cached_property
+    def hourse_labels(self) -> tuple:
+        try:
+            duration = int(self.video_data.get('duration', 0) / (60 * 60)) # hours
+        except ZeroDivisionError:
+            duration = 0
+
+        values = []
+        labels = []
+
+        if duration == 0:
+            return labels, values
+
+        for i in range(1, duration + 1):
+            min = i * 60
+            values.append(min)
+            labels.append(minutes_to_hhmm(min))
+
+        return labels, values
+
+    @cached_property
     def time_labels(self) -> tuple:
         interval = convert_none(os.getenv('PLOT_TIME_INTERVAL'), int) or 10
         interval_by_sec = 60 * interval
