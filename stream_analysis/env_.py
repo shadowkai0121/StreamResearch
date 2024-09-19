@@ -106,7 +106,7 @@ class Env_:
         interval_amount = duration // interval_by_sec + 1
 
         for i in range(int(interval_amount) + 1):
-            time_labels.append(minutes_to_hhmm((i * interval) % 60))
+            time_labels.append(minutes_to_hhmm(i * interval))
             time_values.append(i * interval)
 
         minutes = ceil(duration / 60)
