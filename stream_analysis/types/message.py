@@ -12,6 +12,7 @@ import regex as re
 class StrReplaced(str):
     _replacement = {
         r':_RipP:': 'P',
+        r':skull:7': 'o7',
     }
 
     def __new__(cls, s: str):
@@ -35,6 +36,9 @@ class Message(ColumnsToPropertyMixin, ConvertMixin):
         'cleaned_message',
         'message_type',
         'money',  # USD
+        'positive',
+        'neutral',
+        'negative',
         'time_in_seconds',
         'timestamp',
     )
@@ -56,6 +60,9 @@ class Message(ColumnsToPropertyMixin, ConvertMixin):
             'cleaned_message': '',
             'message_type': secure_data['message_type'] or '',
             'money': 0,
+            'positive': 0.0,
+            'neutral': 0.0,
+            'negative': 0.0,
             'time_in_seconds': secure_data['time_in_seconds'],
             'timestamp': secure_data['timestamp'],
         }
@@ -100,5 +107,8 @@ class Message(ColumnsToPropertyMixin, ConvertMixin):
     cleaned_message: str
     message_type: str
     money: float
+    positive: float
+    neutral: float
+    negative: float
     time_in_seconds: int
     timestamp: int
