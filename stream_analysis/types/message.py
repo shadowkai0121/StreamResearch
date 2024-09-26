@@ -9,6 +9,19 @@ from stream_analysis.types.author import Author
 import regex as re
 
 
+class StrReplaced(str):
+    _replacement = {
+        r':_RipP:': 'P',
+    }
+
+    def __new__(cls, s: str):
+        _s = s
+        for pattern, replacement in cls._replacement.items():
+            _s = re.sub(pattern, replacement, _s)
+
+        return super().__new__(cls, _s)
+
+
 class Message(ColumnsToPropertyMixin, ConvertMixin):
     _columns = (
         'author_id',
@@ -71,7 +84,7 @@ class Message(ColumnsToPropertyMixin, ConvertMixin):
 
             # clean message
             self.data['cleaned_message'] = clean_string(
-                self.message, env_.cleaned_words) or ''
+                StrReplaced(self.message), env_.cleaned_words) or ''
 
         super().__init__(*args, **kwargs)
 

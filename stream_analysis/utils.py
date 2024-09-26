@@ -4,7 +4,7 @@ from typing import Callable
 import regex as re
 
 
-def convert_none(env_var: str, convert_cb: Callable|None = None):
+def convert_none(env_var: str, convert_cb: Callable | None = None):
     """
     Convert 'null', 'None', and empty strings to Python's None.
     """
@@ -102,13 +102,15 @@ def clean_string(s: str, words: list = [], replacement: str = '') -> str:
         r'\b(' + '|'.join(words) + r')\b|' + default, re.IGNORECASE)
 
     previous_text = None
+    _s = s
 
-    while previous_text != s:
-        s = s.strip()
-        previous_text = s
-        s = pattern.sub(replacement, s)
+    while previous_text != _s:
+        _s = _s.strip()
+        previous_text = _s
+        _s = pattern.sub(replacement, _s)
 
-    return s.strip() if s else ''
+    return _s.strip() if _s else ''
+
 
 def minutes_to_hhmm(minutes):
     hours = int(minutes // 60)
