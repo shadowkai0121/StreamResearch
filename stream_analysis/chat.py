@@ -939,7 +939,7 @@ class Chat:
 
             self._df_raw['time_in_minutes'] = (
                 self._df_raw['time_in_seconds'] // 60).astype(int)
-            self._df_raw = self._df_raw.sort_values('time_in_seconds')
+            self._df_raw = self._df_raw.sort_values('timestamp', ignore_index=True)
 
             if self._env.debug:
                 self._df_raw.to_csv(self._env.chat_csv_path)
