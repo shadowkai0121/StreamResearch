@@ -1,5 +1,6 @@
 from chat_downloader.sites.common import Chat
 
+from stream_analysis.analyzer import get_sentiment
 from stream_analysis.env_ import Env_
 from stream_analysis.types.money import Money
 from stream_analysis.utils import get_secure_dict, strip_symbols, clean_string
@@ -39,6 +40,7 @@ class Message(ColumnsToPropertyMixin, ConvertMixin):
         'positive',
         'neutral',
         'negative',
+        'sentiment',
         'time_in_seconds',
         'timestamp',
     )
@@ -63,6 +65,7 @@ class Message(ColumnsToPropertyMixin, ConvertMixin):
             'positive': 0.0,
             'neutral': 0.0,
             'negative': 0.0,
+            'sentiment': None,
             'time_in_seconds': secure_data['time_in_seconds'],
             'timestamp': secure_data['timestamp'],
         }
@@ -93,6 +96,10 @@ class Message(ColumnsToPropertyMixin, ConvertMixin):
             self.data['cleaned_message'] = clean_string(
                 StrReplaced(self.message), env_.cleaned_words) or ''
 
+            if len(self.data['cleaned_message']):
+                self.data['neutral'], self.data['negative'], self.data['positive'], self.data['sentiment'] = \
+                    get_sentiment(self.data['cleaned_message'])
+
         super().__init__(*args, **kwargs)
 
     # type hints for IDE
@@ -110,5 +117,6 @@ class Message(ColumnsToPropertyMixin, ConvertMixin):
     positive: float
     neutral: float
     negative: float
+    sentiment: str
     time_in_seconds: int
     timestamp: int
