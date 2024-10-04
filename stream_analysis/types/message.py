@@ -96,9 +96,9 @@ class Message(ColumnsToPropertyMixin, ConvertMixin):
             self.data['cleaned_message'] = clean_string(
                 StrReplaced(self.message), env_.cleaned_words) or ''
 
-            if len(self.data['cleaned_message']):
-                self.data['neutral'], self.data['negative'], self.data['positive'], self.data['sentiment'] = \
-                    get_sentiment(self.data['cleaned_message'])
+            # if len(self.data['cleaned_message']):
+            #     self.data['neutral'], self.data['negative'], self.data['positive'], self.data['sentiment'] = \
+            #         get_sentiment(self.data['cleaned_message'])
 
         super().__init__(*args, **kwargs)
 
