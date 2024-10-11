@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+from datetime import datetime
 from functools import cached_property
+import json
 from math import ceil
 from chat_downloader.sites import YouTubeChatDownloader
 from stream_analysis.utils import convert_none, minutes_to_hhmm
@@ -58,12 +60,20 @@ class Env_:
         return timestamp
 
     @cached_property
+    def video_start_at(self) -> str:
+        return datetime.fromtimestamp(self.video_start_time).strftime('%Y-%m-%d %H:%M:%S')
+
+    @cached_property
     def video_end_time(self) -> int:
         timestamp = int(self.video_data.get('end_time', 0))
         if timestamp > 0:
             timestamp = timestamp / 1000000  # YT data is microsecs
 
         return timestamp
+
+    @cached_property
+    def video_end_at(self) -> str:
+        return datetime.fromtimestamp(self.video_end_time).strftime('%Y-%m-%d %H:%M:%S')
 
     @cached_property
     def video_data_path(self) -> str:
@@ -98,7 +108,8 @@ class Env_:
     @cached_property
     def hourse_labels(self) -> tuple:
         try:
-            duration = int(self.video_data.get('duration', 0) / (60 * 60)) # hours
+            duration = int(self.video_data.get(
+                'duration', 0) / (60 * 60))  # hours
         except ZeroDivisionError:
             duration = 0
 
@@ -142,12 +153,11 @@ class Env_:
         self.init_env()
 
     def init_env(self) -> None:
-        if not self.debug:
-            if os.path.exists(self.data_path):
-                shutil.rmtree(self.data_path)
+        shutil.rmtree(self.data_path)
+        os.mkdir(self.data_path)
 
-        if not os.path.exists(self.data_path):
-            os.mkdir(self.data_path)
+        with open(self.video_data_path, 'w', encoding='utf8') as f:
+            json.dump(self.video_data, f, indent=2, ensure_ascii=False)
 
     @staticmethod
     def remove_illegal_path_characters(path) -> str:
