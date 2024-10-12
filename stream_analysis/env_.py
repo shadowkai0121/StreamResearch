@@ -153,7 +153,8 @@ class Env_:
         self.init_env()
 
     def init_env(self) -> None:
-        shutil.rmtree(self.data_path)
+        if os.path.exists(self.data_path):
+            shutil.rmtree(self.data_path)
         os.mkdir(self.data_path)
 
         with open(self.video_data_path, 'w', encoding='utf8') as f:
